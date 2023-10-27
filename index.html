@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gerador de Nomes de Avatar</title>
+    <!-- Adicione os links para a biblioteca Bootstrap CSS e jQuery -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #007BFF;
+            color: #000;
+            text-align: center;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #000;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        input[type="number"] {
+            margin: 5px;
+        }
+
+        .toggle-button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .toggle-button.active {
+            background-color: #4CAF50;
+        }
+
+        #avatarResult {
+            background-color: #fff;
+            color: #fff;
+            border: 2px solid #eee;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de Nomes de Avatar</h1>
+        <label for="avatarSize">Tamanho do Nome:</label>
+        <input type="number" id="avatarSize" min="1" max="10" value="5"><br><br>
+
+        <button id="toggleIncludeWords" class="toggle-button">Incluir Palavras Aleatórias</button><br><br>
+
+        <button id="generateAvatar" class="btn btn-primary">Gerar Nome de Avatar</button><br><br>
+
+        <div id="avatarResult"></div>
+    </div>
+
+    <script>
+        const words = [
+            'Lobo', 'Fogo', 'Estrela', 'Dragão', 'Mar', 'Lua', 'Sol', 'Terra', 'Vento', 'Rio',
+            'Cavaleiro', 'Rainha', 'Mago', 'Bruxa', 'Princesa', 'Arqueiro', 'Espada', 'Escudo', 'Trovão', 'Pedra',
+            'Água', 'Gelo', 'Sombra', 'Aço', 'Nevoeiro', 'Montanha', 'Ouro', 'Prata', 'Ferro', 'Céu',
+            'Tigre', 'Leão', 'Urso', 'Pantera', 'Águia', 'Lince', 'Coruja', 'Lobo', 'Zorro', 'Cervo',
+            'Flor', 'Jardim', 'Floresta', 'Chuva', 'Arco-Íris', 'Oceano', 'Deserto', 'Rocha', 'Vale', 'Ponte',
+            'Árvore', 'Cachoeira', 'Casa', 'Porta', 'Janela', 'Lareira', 'Cama', 'Mesa', 'Cadeira', 'Luminária',
+            'Lua', 'Estrela', 'Planeta', 'Cometa', 'Galáxia', 'Nebulosa', 'Quasar', 'Astronauta', 'Foguete', 'Nave',
+            'Tempo', 'Relógio', 'Areia', 'Vento', 'Nuvem', 'Chuva', 'Neve', 'Geada', 'Trovão', 'Raio',
+            'Cérebro', 'Mente', 'Pensamento', 'Ideia', 'Cognição', 'Memória', 'Inteligência', 'Consciência', 'Sonho', 'Inspiração',
+            'Magia', 'Feitiço', 'Poção', 'Bruxaria', 'Encanto', 'Mistério', 'Adivinhação', 'Alquimia', 'Elixir', 'Runa',
+            'Espada', 'Escudo', 'Arco', 'Flecha', 'Lança', 'Martelo', 'Cota de Malha', 'Elmo', 'Armadura', 'Cavalo',
+            'Rei', 'Rainha', 'Príncipe', 'Princesa', 'Cavaleiro', 'Dragão', 'Bruxa', 'Feiticeiro', 'Mago', 'Sábio',
+            'Herói', 'Lenda', 'Aventura', 'Tesouro', 'Missão', 'Jornada', 'Destino', 'Mistério', 'Enigma', 'Segredo',
+            'Comida', 'Bebida', 'Receita', 'Chef', 'Restaurante', 'Cozinha', 'Sabor', 'Aroma', 'Gourmet', 'Sobremesa',
+            'Música', 'Melodia', 'Canção', 'Cantor', 'Banda', 'Instrumento', 'Concerto', 'Harmonia', 'Ritmo', 'Notas',
+            'Livro', 'Leitura', 'Autor', 'História', 'Aventura', 'Página', 'Palavra', 'Biblioteca', 'Ficção', 'Não Ficção',
+            'Arte', 'Pintura', 'Escultura', 'Artista', 'Galeria', 'Cores', 'Tinta', 'Pincel', 'Inspiração', 'Museu',
+            'Cinema', 'Filme', 'Atores', 'Diretor', 'Câmera', 'Cena', 'Roteiro', 'Drama', 'Comédia', 'Suspense',
+            'Esporte', 'Atleta', 'Equipe', 'Torneio', 'Vitória', 'Derrota', 'Competição', 'Campeão', 'Jogador', 'Estádio',
+            'Ciência', 'Laboratório', 'Descoberta', 'Invenção', 'Fórmula', 'Pesquisa', 'Teoria', 'Experimento', 'Hipótese', 'Cientista',
+            'Natureza', 'Animal', 'Planta', 'Ecossistema', 'Sustentabilidade', 'Clima', 'Biologia', 'Ecologia', 'Evolução', 'Astronomia',
+            'Viagem', 'Aventura', 'Destino', 'Mundo', 'País', 'Cidade', 'Exploração', 'Cultura', 'Turismo', 'Aventureiro',
+            'História', 'Passado', 'Memória', 'Tradição', 'Civilização', 'Guerra', 'Paz', 'Revolução', 'Arqueologia', 'Patrimônio',
+            'Família', 'Amor', 'Relação', 'Criança', 'Pais', 'Avós', 'Irmão', 'Irmã', 'Parente', 'Casa',
+            'Amizade', 'Companhia', 'Confiança', 'Amigo', 'Cumplicidade', 'Colega', 'Parceiro', 'Comunidade', 'Encontro', 'Relacionamento',
+            'Fé', 'Religião', 'Espiritualidade', 'Deus', 'Oração', 'Santuário', 'Crença', 'Peregrinação', 'Sacramento', 'Meditação',
+            'Tecnologia', 'Inovação', 'Computador', 'Internet', 'Código', 'Programação', 'Robô', 'Inteligência Artificial', 'Gadget', 'Dispositivo',
+            'Natureza', 'Animal', 'Planta', 'Ecossistema', 'Sustentabilidade', 'Clima', 'Biologia', 'Ecologia', 'Evolução', 'Astronomia',
+            'Viagem', 'Aventura', 'Destino', 'Mundo', 'País', 'Cidade', 'Exploração', 'Cultura', 'Turismo', 'Aventureiro',
+            'História', 'Passado', 'Memória', 'Tradição', 'Civilização', 'Guerra', 'Paz', 'Revolução', 'Arqueologia', 'Patrimônio',
+            'Família', 'Amor', 'Relação', 'Criança', 'Pais', 'Avós', 'Irmão', 'Irmã', 'Parente', 'Casa',
+            'Amizade', 'Companhia', 'Confiança', 'Amigo', 'Cumplicidade', 'Colega', 'Parceiro', 'Comunidade', 'Encontro', 'Relacionamento',
+            'Fé', 'Religião', 'Espiritualidade', 'Deus', 'Oração', 'Santuário', 'Crença', 'Peregrinação', 'Sacramento', 'Meditação',
+            'Tecnologia', 'Inovação', 'Computador', 'Internet', 'Código', 'Programação', 'Robô', 'Inteligência Artificial', 'Gadget', 'Dispositivo'
+        ];
+
+        const avatarSizeInput = document.getElementById('avatarSize');
+        const toggleIncludeWordsButton = document.getElementById('toggleIncludeWords');
+        const generateAvatarButton = document.getElementById('generateAvatar');
+        const avatarResult = document.getElementById('avatarResult');
+        let includeWords = false;
+
+        toggleIncludeWordsButton.addEventListener('click', () => {
+            includeWords = !includeWords;
+            toggleIncludeWordsButton.classList.toggle('active', includeWords);
+        });
+
+        generateAvatarButton.addEventListener('click', () => {
+            const size = parseInt(avatarSizeInput.value);
+            const nameArray = [];
+
+            for (let i = 0; i < size; i++) {
+                if (includeWords) {
+                    const randomIndex = Math.floor(Math.random() * words.length);
+                    nameArray.push(words[randomIndex]);
+                } else {
+                    const randomChar = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                    nameArray.push(randomChar);
+                }
+            }
+
+            const avatarName = nameArray.join('');
+
+            avatarResult.textContent = avatarName;
+        });
+    </script>
+</body>
+</html>
